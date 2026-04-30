@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Cuenta regresiva</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ffdbe6, #fce4ec);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    text-align: center;
+}
+
+/* Fondo tipo papiro */
+.container {
+    background: radial-gradient(circle at top left, #fff0f5, #f8d7e3);
+    padding: 40px 25px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    max-width: 380px;
+    position: relative;
+    overflow: hidden;
+    animation: fadeIn 1.5s ease;
+}
+
+/* textura */
+.container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+    opacity: 0.2;
+    border-radius: 20px;
+}
+
+/* título */
+h1 {
+    font-size: 1.4em;
+    color: #ff5c8a;
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+}
+
+/* nombre */
+.name {
+    font-size: 0.95em;
+    margin-bottom: 20px;
+    line-height: 1.4em;
+    color: #6b4b57;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+    animation-delay: 0.5s;
+}
+
+/* frases */
+.frase-principal {
+    font-family: 'Georgia', serif;
+    font-size: 1.05em;
+    margin-bottom: 10px;
+    color: #4a2f3a;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+    animation-delay: 1s;
+}
+
+.frase-secundaria {
+    font-family: 'Georgia', serif;
+    font-size: 0.9em;
+    color: #7a5c6b;
+    margin-bottom: 25px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+    animation-delay: 1.5s;
+}
+
+/* contador */
+.time {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 1s ease forwards;
+    animation-delay: 2s;
+}
+
+.box {
+    background: rgba(255,255,255,0.6);
+    padding: 10px;
+    border-radius: 12px;
+    flex: 1;
+}
+
+.number {
+    font-size: 1.4em;
+    font-weight: bold;
+    color: #ff4d88;
+}
+
+.label {
+    font-size: 0.7em;
+    color: #aa8895;
+}
+
+/* animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+    <h1>💖 Cuenta regresiva 💖</h1>
+
+    <div class="name">
+        Para el cumpleaños de la cansona con los ojos más bonitos<br>
+        <strong>Anny Jannit Samudio Pérez</strong>
+    </div>
+
+    <div class="frase-principal">
+        Eres de esas historias que uno no sabía que quería leer… hasta que aparecen
+    </div>
+
+    <div class="frase-secundaria">
+        Y entre todas las historias posibles, me alegra coincidir en la misma página contigo
+    </div>
+
+    <div class="time">
+        <div class="box">
+            <div id="days" class="number">0</div>
+            <div class="label">Días</div>
+        </div>
+        <div class="box">
+            <div id="hours" class="number">0</div>
+            <div class="label">Horas</div>
+        </div>
+        <div class="box">
+            <div id="minutes" class="number">0</div>
+            <div class="label">Min</div>
+        </div>
+        <div class="box">
+            <div id="seconds" class="number">0</div>
+            <div class="label">Seg</div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+const birthday = new Date(2026, 6, 11, 0, 0, 0);
+
+function updateCountdown() {
+    const now = new Date();
+    const diff = birthday - now;
+
+    if (diff <= 0) {
+        document.querySelector(".container").innerHTML = `
+            <h1>💖 Feliz cumpleaños 💖</h1>
+            <p>
+            Y hoy empieza un nuevo capítulo<br>
+            <strong>Anny</strong>
+            </p>
+        `;
+        return;
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    document.getElementById("days").textContent = days;
+    document.getElementById("hours").textContent = hours;
+    document.getElementById("minutes").textContent = minutes;
+    document.getElementById("seconds").textContent = seconds;
+}
+
+setInterval(updateCountdown, 1000);
+updateCountdown();
+</script>
+
+</body>
+</html>
