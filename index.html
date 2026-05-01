@@ -8,7 +8,7 @@
 body {
     margin: 0;
     font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #ffdbe6, #fce4ec);
+    background: #000;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -17,86 +17,57 @@ body {
     text-align: center;
 }
 
-/* Fondo tipo papiro */
+/* CANVAS */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* CONTENIDO */
 .container {
-    background: radial-gradient(circle at top left, #fff0f5, #f8d7e3);
+    background: rgba(255, 240, 245, 0.85);
     padding: 50px 30px;
     border-radius: 20px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    
+    box-shadow: 0 10px 40px rgba(255, 77, 136, 0.3);
     width: 92%;
     max-width: 600px;
-
     position: relative;
-    overflow: hidden;
-    animation: fadeIn 1.5s ease;
+    z-index: 1;
+    backdrop-filter: blur(8px);
 }
 
-/* textura */
-.container::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: url('https://www.transparenttextures.com/patterns/paper-fibers.png');
-    opacity: 0.2;
-    border-radius: 20px;
-}
-
-/* título */
+/* TEXTO */
 h1 {
     font-size: 1.6em;
     color: #ff5c8a;
-    margin-bottom: 12px;
-    opacity: 0;
-    animation: fadeUp 1s ease forwards;
 }
 
-/* nombre */
 .name {
-    font-size: 1em;
-    margin-bottom: 25px;
-    line-height: 1.5em;
-    color: #6b4b57;
-    opacity: 0;
-    animation: fadeUp 1s ease forwards;
-    animation-delay: 0.5s;
+    margin-bottom: 20px;
 }
 
-/* frases */
 .frase-principal {
     font-family: 'Georgia', serif;
-    font-size: 1.15em;
-    margin-bottom: 12px;
-    color: #4a2f3a;
-    opacity: 0;
-    animation: fadeUp 1s ease forwards;
-    animation-delay: 1s;
+    margin-bottom: 10px;
 }
 
 .frase-secundaria {
     font-family: 'Georgia', serif;
-    font-size: 1em;
-    color: #7a5c6b;
-    margin-bottom: 30px;
-    opacity: 0;
-    animation: fadeUp 1s ease forwards;
-    animation-delay: 1.5s;
+    margin-bottom: 25px;
 }
 
-/* contador */
+/* CONTADOR */
 .time {
     display: flex;
-    justify-content: space-between;
     gap: 10px;
-    opacity: 0;
-    animation: fadeUp 1s ease forwards;
-    animation-delay: 2s;
 }
 
 .box {
     background: rgba(255,255,255,0.7);
-    padding: 15px 10px;
-    border-radius: 14px;
+    padding: 15px;
+    border-radius: 12px;
     flex: 1;
 }
 
@@ -104,30 +75,31 @@ h1 {
     font-size: 1.8em;
     font-weight: bold;
     color: #ff4d88;
+    display: inline-block;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* ANIMACIONES NUMEROS */
+.flip {
+    transform: rotateX(90deg);
+    opacity: 0;
+}
+
+.glow {
+    text-shadow: 0 0 8px #ff4d88, 0 0 15px #ff99cc;
 }
 
 .label {
-    font-size: 0.75em;
-    color: #aa8895;
-}
-
-/* animaciones */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes fadeUp {
-    from { opacity: 0; transform: translateY(15px); }
-    to { opacity: 1; transform: translateY(0); }
+    font-size: 0.7em;
 }
 </style>
-
 </head>
+
 <body>
 
-<div class="container">
+<canvas id="canvas"></canvas>
 
+<div class="container">
     <h1>💖 Cuenta regresiva 💖</h1>
 
     <div class="name">
@@ -144,28 +116,32 @@ h1 {
     </div>
 
     <div class="time">
-        <div class="box">
-            <div id="days" class="number">0</div>
-            <div class="label">Días</div>
-        </div>
-        <div class="box">
-            <div id="hours" class="number">0</div>
-            <div class="label">Horas</div>
-        </div>
-        <div class="box">
-            <div id="minutes" class="number">0</div>
-            <div class="label">Min</div>
-        </div>
-        <div class="box">
-            <div id="seconds" class="number">0</div>
-            <div class="label">Seg</div>
-        </div>
+        <div class="box"><div id="days" class="number">0</div><div class="label">Días</div></div>
+        <div class="box"><div id="hours" class="number">0</div><div class="label">Horas</div></div>
+        <div class="box"><div id="minutes" class="number">0</div><div class="label">Min</div></div>
+        <div class="box"><div id="seconds" class="number">0</div><div class="label">Seg</div></div>
     </div>
-
 </div>
 
 <script>
-const birthday = new Date(2026, 6, 11, 0, 0, 0);
+// ===== CUENTA REGRESIVA =====
+const birthday = new Date(2026, 6, 11);
+
+function updateElement(id, value) {
+    const el = document.getElementById(id);
+
+    if (el.textContent != value) {
+        el.classList.add("flip");
+
+        setTimeout(() => {
+            el.textContent = value;
+            el.classList.remove("flip");
+
+            el.classList.add("glow");
+            setTimeout(() => el.classList.remove("glow"), 300);
+        }, 150);
+    }
+}
 
 function updateCountdown() {
     const now = new Date();
@@ -174,27 +150,125 @@ function updateCountdown() {
     if (diff <= 0) {
         document.querySelector(".container").innerHTML = `
             <h1>💖 Feliz cumpleaños 💖</h1>
-            <p style="font-size:1.2em;">
-            Y hoy empieza un nuevo capítulo<br>
-            <strong>Anny</strong>
-            </p>
+            <p>Y hoy empieza un nuevo capítulo<br><strong>Anny</strong></p>
         `;
         return;
     }
 
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-    const minutes = Math.floor((diff / (1000 * 60)) % 60);
-    const seconds = Math.floor((diff / 1000) % 60);
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const m = Math.floor((diff / (1000 * 60)) % 60);
+    const s = Math.floor((diff / 1000) % 60);
 
-    document.getElementById("days").textContent = days;
-    document.getElementById("hours").textContent = hours;
-    document.getElementById("minutes").textContent = minutes;
-    document.getElementById("seconds").textContent = seconds;
+    updateElement("days", d);
+    updateElement("hours", h);
+    updateElement("minutes", m);
+    updateElement("seconds", s);
 }
 
 setInterval(updateCountdown, 1000);
 updateCountdown();
+
+// ===== MATRIX =====
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+const text = "Linda";
+const fontSize = 28;
+const spacing = 7;
+const speed = 2;
+
+const columns = canvas.width / spacing;
+const drops = Array(Math.floor(columns)).fill(0).map(() => Math.random() * canvas.height);
+
+function getColor() {
+    const colors = ["#ff4da6", "#ff66cc", "#ff99cc", "#ff1a75"];
+    return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function drawMatrix() {
+    ctx.fillStyle = "rgba(0,0,0,0.08)";
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+
+    ctx.font = fontSize + "px monospace";
+
+    for (let i = 0; i < drops.length; i++) {
+        let x = i * spacing;
+        let y = drops[i];
+
+        ctx.fillStyle = getColor();
+        ctx.fillText(text, x, y);
+
+        if (y > canvas.height && Math.random() > 0.985) {
+            drops[i] = 0;
+        }
+
+        drops[i] += speed;
+    }
+}
+
+// ===== EXPLOSIONES =====
+let particles = [];
+
+function createExplosion(x, y) {
+    for (let i = 0; i < 120; i++) {
+        particles.push({
+            x: x,
+            y: y,
+            dx: (Math.random() - 0.5) * 12,
+            dy: (Math.random() - 0.5) * 12,
+            life: 120,
+            type: Math.random() > 0.6 ? "text" : "spark"
+        });
+    }
+}
+
+function drawParticles() {
+    for (let i = 0; i < particles.length; i++) {
+        let p = particles[i];
+
+        if (p.type === "spark") {
+            ctx.fillStyle = "#ff99cc";
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            ctx.fillStyle = "#ffffff";
+            ctx.font = "14px monospace";
+            ctx.fillText("Mi cansona", p.x, p.y);
+        }
+
+        p.x += p.dx;
+        p.y += p.dy;
+        p.life--;
+
+        if (p.life <= 0) {
+            particles.splice(i, 1);
+            i--;
+        }
+    }
+}
+
+window.addEventListener("click", (e) => {
+    createExplosion(e.clientX, e.clientY);
+});
+
+// LOOP
+function animate() {
+    drawMatrix();
+    drawParticles();
+    requestAnimationFrame(animate);
+}
+animate();
+
+// RESPONSIVE
+window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
 </script>
 
 </body>
